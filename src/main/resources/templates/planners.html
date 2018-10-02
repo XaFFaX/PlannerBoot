@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html layout:decorator="layout/layout"
+	xmlns:th="http://www.thymeleaf.org">
+<body>
+	<th:block layout:fragment="content">
+
+		<div class="row">
+			<div class="col-md-4 col-sm-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">Add new planner</div>
+					<div class="panel-body">
+						<form method="post" class="form-group" action="/">
+							<div class="form-group">
+								<label for="id">Id:&nbsp;</label> <input
+									class="form-control" type="number" name="id" id="id"
+									maxlength="10" th:value="${plannerRet?.getPlan_id()}" disabled/>
+							</div>
+
+							<div class="form-group">
+								<label for="userName">Name:&nbsp;</label> <input
+									class="form-control" type="text" name="userName" id="userName"
+									maxlength="50" th:value="${plannerRet?.getUser_name()}"/>
+							</div>
+
+							<div class="form-group">
+								<label for="room">Room:&nbsp;</label> <input
+									class="form-control" type="text" name="room"
+									id="room" maxlength="20" th:value="${plannerRet?.getRoom()}"/>
+							</div>
+							
+							<div class="form-group">
+								<label for="fromDate">From date:&nbsp;</label> <input
+									class="form-control" type="datetime-local" name="fromDate"
+									id="fromDate" maxlength="20" th:value="${#temporals.format(plannerRet?.getFromDate(),'dd-MM-yyyy HH:mm')}"/>
+							</div>
+							
+							<div class="form-group">
+								<label for="toDate">To date:&nbsp;</label> <input
+									class="form-control" type="datetime-local" name="toDate"
+									id="toDate" maxlength="20" th:value="${#temporals.format(plannerRet?.getToDate(),'dd-MM-yyyy HH:mm')}"/>
+							</div>
+
+							<input class="btn btn-primary" type="submit" value="Save" />
+
+						</form>
+					</div>
+					<div class="panel-footer">
+						<span th:text="${message}">Status</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-8 col-sm-8">
+				<div class="panel panel-default">
+					<div class="panel-heading">Planner List</div>
+					<div class="panel-body">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Plan Id</th>
+									<th>From date</th>
+									<th>Room</th>
+									<th>To date</th>
+									<th>User name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="planner : ${planners}">
+									<td th:text="${planner.getPlan_id()}">Plan Id</td>
+									<td th:text="${planner.getFromDate()}">From date</td>
+									<td th:text="${planner.getRoom()}">Room</td>
+									<td th:text="${planner.getToDate()}">To date</td>
+									<td th:text="${planner.getUser_name()}">User name</td>
+									<td><a th:href="@{'/remove/' + ${planner.getPlan_id()}}">Delete</a></td>
+									<td><a th:href="@{'/edit/' + ${planner.getPlan_id()}}">Edit</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+</body>
+</html>
