@@ -54,7 +54,7 @@ class PlannerController {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
 	@ResponseStatus(value = HttpStatus.OK)
 	ModelAndView addStudent(@RequestParam String userName, @RequestParam Integer room, @RequestParam String fromDate,
-			@RequestParam String toDate) throws Exception {
+	        @RequestParam String toDate) throws Exception {
 
 		ModelAndView modelAndView = new ModelAndView("planners");
 		try {
@@ -64,9 +64,9 @@ class PlannerController {
 			planner.setFromDate(LocalDateTime.parse(fromDate, df));
 			planner.setToDate(LocalDateTime.parse(toDate, df));
 			Map<Boolean, String> isFoundMessage = validatePlanner.validate(planner);
-			if (isFoundMessage.containsKey(true))
+			if (isFoundMessage.containsKey(Boolean.TRUE))
 				planner = plannerService.saveOrUpdatePlanner(planner);
-			modelAndView.addObject("message", isFoundMessage.entrySet().stream().findAny());
+			modelAndView.addObject("message", isFoundMessage.entrySet().stream().findAny().get());
 		} catch (Exception ex) {
 			modelAndView.addObject("message", "Failed to add planner: " + ex.getMessage());
 		}

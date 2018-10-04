@@ -20,7 +20,7 @@ public class ValidatePlanner {
 	PlannerService plannerService;
 
 	private static boolean areDatesOverlapped(LocalDateTime startDate1, LocalDateTime endDate1,
-			LocalDateTime startDate2, LocalDateTime endDate2) {
+	        LocalDateTime startDate2, LocalDateTime endDate2) {
 		return (startDate1.isBefore(endDate2) && (startDate2.isBefore(endDate1)));
 	}
 
@@ -31,7 +31,7 @@ public class ValidatePlanner {
 		// check to see if appointment is not >120 minutes and <15 minutes
 		if (minutes > 120 || minutes < 15) {
 			isFoundMessage.put(false,
-					"Scheduled time cannot be longer than 120 minutes and shorter than 15 minutes! Please update accordingly.");
+			        "Scheduled time cannot be longer than 120 minutes and shorter than 15 minutes! Please update accordingly.");
 			return isFoundMessage;
 		}
 		Iterable<Planner> planners = plannerService.getPlanners();
@@ -39,7 +39,7 @@ public class ValidatePlanner {
 		for (Planner plannerElem : planners) {
 			if (planner.getRoom() == plannerElem.getRoom()) {
 				if (areDatesOverlapped(planner.getFromDate(), planner.getToDate(), plannerElem.getFromDate(),
-						plannerElem.getToDate())) {
+				        plannerElem.getToDate())) {
 					overlap = true;
 					break;
 				}
@@ -64,13 +64,13 @@ public class ValidatePlanner {
 				for (Planner planElem : planners) {
 					if (planner.getRoom() == planElem.getRoom()) {
 						if (areDatesOverlapped(proposedStartDate, proposedEndDate, planElem.getFromDate(),
-								planElem.getToDate())) {
+						        planElem.getToDate())) {
 							break;
 						} else {
 							DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 							message = "Sorry, selected time for room number " + planner.getRoom()
-									+ " is not available, proposed dates for this room: " + df.format(proposedStartDate)
-									+ " to " + df.format(proposedEndDate);
+							        + " is not available, proposed dates for this room: " + df.format(proposedStartDate)
+							        + " to " + df.format(proposedEndDate);
 							foundSlot = true;
 							i = 100;
 
@@ -84,6 +84,7 @@ public class ValidatePlanner {
 
 		else {
 			// logger.info("Plan saved successfully, Plan Details=" + plan);
+			foundSlot = true;
 			message = "Added successfully!";
 		}
 		isFoundMessage.put(foundSlot, message);
