@@ -3,6 +3,7 @@ package com.xaffax.PlannerSpringBoot.controllers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +23,20 @@ import com.xaffax.PlannerSpringBoot.validation.ValidatePlanner;
 
 @Controller
 @RequestMapping("/")
-class PlannerController {
-	private final static DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+class PlannerController
+{
+	private final static DateTimeFormatter	df	= DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
 	@Autowired
-	PlannerService plannerService;
+	PlannerService							plannerService;
 
 	@Autowired
-	ValidatePlanner validatePlanner;
+	ValidatePlanner							validatePlanner;
 
 	@RequestMapping(method = RequestMethod.GET)
-	ModelAndView home() {
-		Iterable<Planner> planners = plannerService.getPlanners();
+	ModelAndView home()
+	{
+		List<Planner> planners = plannerService.getPlanners();
 		Map<String, Object> params = new HashMap<>();
 		params.put("planners", planners);
 
@@ -41,33 +44,44 @@ class PlannerController {
 	}
 
 	@RequestMapping(value = "remove/{id}", method = RequestMethod.GET)
-	String removePlanner(@PathVariable long id) {
-		plannerService.removePlanner(id);
-		return "redirect:/";
+	ModelAndView removePlanner(@PathVariable long id)
+	{
+		// return "redirect:/";
+		ModelAndView modelAndView = new ModelAndView("planners");
+		modelAndView.addObject("message", plannerService.removePlanner(id));
+		modelAndView.addObject("planners", plannerService.getPlanners());
+		return modelAndView;
 	}
 
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
-	ModelAndView editPlanner(@PathVariable long id) {
+	ModelAndView editPlanner(@PathVariable long id)
+	{
 		return new ModelAndView("planners", "plannerRet", plannerService.getPlanner(id));
 	}
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
 	@ResponseStatus(value = HttpStatus.OK)
-	ModelAndView addStudent(@RequestParam String userName, @RequestParam Integer room, @RequestParam String fromDate,
-	        @RequestParam String toDate) throws Exception {
+	ModelAndView addStudent(@RequestParam Long id, @RequestParam String userName,
+			@RequestParam Integer room, @RequestParam String fromDate, @RequestParam String toDate)
+			throws Exception
+	{
 
 		ModelAndView modelAndView = new ModelAndView("planners");
-		try {
+		try
+		{
 			Planner planner = new Planner();
+			planner.setPlan_id(id);
 			planner.setUser_name(userName);
 			planner.setRoom(room);
 			planner.setFromDate(LocalDateTime.parse(fromDate, df));
 			planner.setToDate(LocalDateTime.parse(toDate, df));
-			Map<Boolean, String> isFoundMessage = validatePlanner.validate(planner);
-			if (isFoundMessage.containsKey(Boolean.TRUE))
+			Map.Entry<Boolean, String> entry = validatePlanner.validate(planner).entrySet()
+					.iterator().next();
+			if (entry.getKey() == Boolean.TRUE)
 				planner = plannerService.saveOrUpdatePlanner(planner);
-			modelAndView.addObject("message", isFoundMessage.entrySet().stream().findAny().get());
-		} catch (Exception ex) {
+			modelAndView.addObject("message", entry.getValue());
+		} catch (Exception ex)
+		{
 			modelAndView.addObject("message", "Failed to add planner: " + ex.getMessage());
 		}
 		modelAndView.addObject("planners", plannerService.getPlanners());
